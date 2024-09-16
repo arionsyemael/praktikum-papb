@@ -5,6 +5,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -29,7 +32,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    LandingPage()
+                    LoginPage()
                 }
             }
         }
@@ -37,11 +40,9 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun LandingPage() {
+fun LoginPage() {
     var name by remember { mutableStateOf("") }
     var nim by remember { mutableStateOf("") }
-    var kelas by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
     var submittedText by remember { mutableStateOf("") }
 
     Box(
@@ -58,9 +59,9 @@ fun LandingPage() {
                 .wrapContentHeight()
                 .padding(16.dp)
         ) {
-            // Title Text
+            // Text judul
             Text(
-                text = "Welcome King",
+                text = "Login",
                 style = MaterialTheme.typography.headlineLarge.copy(
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF6200EE)
@@ -77,18 +78,24 @@ fun LandingPage() {
                 )
             }
 
-
+            // Field untuk Nama dengan ikon profil
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
-                label = { Text("Nama") },
+                label = { Text("Name") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.AccountCircle,
+                        contentDescription = "Icon Profile"
+                    )
+                },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
             )
 
-
+            // Field untuk NIM dengan ikon gembok
             OutlinedTextField(
                 value = nim,
                 onValueChange = { nim = it },
@@ -96,36 +103,21 @@ fun LandingPage() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Lock,
+                        contentDescription = "Icon Lock"
+                    )
+                },
+                //number buat angka di field
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-            )
-
-
-            OutlinedTextField(
-                value = kelas,
-                onValueChange = { kelas = it },
-                label = { Text("Kelas") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
-            )
-
-            OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
-                label = { Text("Email") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
             )
 
             Spacer(modifier = Modifier.height(24.dp))
 
-
             Button(
                 onClick = {
-                    submittedText = "Nama: $name\nNIM: $nim\nKelas: $kelas\nEmail: $email"
+                    submittedText = "Nama: $name\nNIM: $nim"
                 },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE))
@@ -136,10 +128,11 @@ fun LandingPage() {
     }
 }
 
+
 @Preview(showBackground = true)
 @Composable
-fun LandingPagePreview() {
+fun LoginPagePreview() {
     ProjectComposeDTheme {
-        LandingPage()
+        LoginPage()
     }
 }
