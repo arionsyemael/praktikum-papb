@@ -9,19 +9,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tifd.projectcomposed.ui.theme.ProjectComposeDTheme
+import androidx.compose.ui.platform.LocalFocusManager
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,7 +41,12 @@ class MainActivity : ComponentActivity() {
 fun LoginPage() {
     var name by remember { mutableStateOf("") }
     var nim by remember { mutableStateOf("") }
-    var submittedText by remember { mutableStateOf("") }
+    var submittedText by remember { mutableStateOf(false) } // Untuk cek apakah sudah submit
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
+
+    // Validasi form apakah sudah terisi
+    val isFormValid = name.isNotBlank() && nim.isNotBlank()
 
     Box(
         modifier = Modifier
@@ -70,15 +73,7 @@ fun LoginPage() {
                     .padding(bottom = 24.dp)
             )
 
-            if (submittedText.isNotEmpty()) {
-                Text(
-                    text = submittedText,
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(bottom = 24.dp)
-                )
-            }
-
-            // Field untuk Nama dengan ikon profil
+            // Field untuk Nama
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
@@ -86,43 +81,62 @@ fun LoginPage() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.AccountCircle,
-                        contentDescription = "Icon Profile"
-                    )
-                },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
             )
 
-            // Field untuk NIM dengan ikon gembok
+            // Field untuk NIM, hanya menerima angka
             OutlinedTextField(
                 value = nim,
-                onValueChange = { nim = it },
+                onValueChange = {
+                    if (it.all { char -> char.isDigit() }) {
+                        nim = it
+                    }
+                },
                 label = { Text("NIM") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Lock,
-                        contentDescription = "Icon Lock"
-                    )
-                },
-                //number buat angka di field
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
 
             Spacer(modifier = Modifier.height(24.dp))
 
+            // Tombol submit yang di-disable jika form tidak valid
             Button(
                 onClick = {
-                    submittedText = "Nama: $name\nNIM: $nim"
+                    submittedText = true
+                    keyboardController?.hide() // Sembunyikan keyboard setelah submit
+                    focusManager.clearFocus() // Hapus fokus dari semua input
                 },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE))
+                modifier = Modifier
+                    .fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (isFormValid) Color(0xFF6200EE) else Color.Gray
+                ),
+                enabled = isFormValid // Button aktif hanya jika form valid
             ) {
                 Text(text = "Submit", color = Color.White)
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Menampilkan Nama dan NIM di bagian bawah setelah tombol submit ditekan
+            if (submittedText) {
+                Column(
+                    horizontalAlignment = Alignment.Start,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = "Nama: $name",
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
+                    Text(
+                        text = "NIM: $nim",
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
+                }
             }
         }
     }
@@ -136,3 +150,4 @@ fun LoginPagePreview() {
         LoginPage()
     }
 }
+
