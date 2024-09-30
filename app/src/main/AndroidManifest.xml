@@ -12,9 +12,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ProjectComposeD"
         tools:targetApi="31">
+
+        <!-- Deklarasi ListActivity -->
+        <activity
+            android:name=".ListActivity"
+            android:exported="true" />
+
         <activity
             android:name=".MainActivity2"
             android:exported="false" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -22,7 +29,6 @@
             android:theme="@style/Theme.ProjectComposeD">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

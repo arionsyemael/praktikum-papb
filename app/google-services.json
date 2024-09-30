@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "485736596492",
+    "project_id": "papb-praktikum-arion",
+    "storage_bucket": "papb-praktikum-arion.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:485736596492:android:6b11a0651dfebbd8965a29",
+        "android_client_info": {
+          "package_name": "com.tifd.projectcomposed"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAH0iyEAFp-YKJwhBQ_XE4AEnZJ-rEgXF0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
