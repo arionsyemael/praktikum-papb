@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -13,14 +15,15 @@
         android:theme="@style/Theme.ProjectComposeD"
         tools:targetApi="31">
 
+
         <!-- Deklarasi ListActivity -->
         <activity
             android:name=".ListActivity"
             android:exported="true" />
 
         <activity
-            android:name=".MainActivity2"
-            android:exported="false" />
+            android:name=".GithubProfileActivity" />
+
 
         <activity
             android:name=".MainActivity"
@@ -33,5 +36,6 @@
             </intent-filter>
         </activity>
     </application>
+
 
 </manifest>

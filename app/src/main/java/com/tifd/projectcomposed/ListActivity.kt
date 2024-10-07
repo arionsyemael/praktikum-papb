@@ -1,12 +1,15 @@
 package com.tifd.projectcomposed
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -44,6 +47,7 @@ fun DataListScreen() {
     var isError by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current // for navigating to GitHubProfile
 
     // Fetch data on component mount
     LaunchedEffect(Unit) {
@@ -62,7 +66,17 @@ fun DataListScreen() {
     Scaffold(
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState)
+        },
+        floatingActionButton = {
+            FloatingActionButton(onClick = {
+                // Navigate to GithubProfile Activity
+                val intent = Intent(context, GithubProfileActivity::class.java)
+                context.startActivity(intent)
+            }) {
+                Icon(Icons.Default.Person, contentDescription = "GitHub Profile")
+            }
         }
+
     ) {
         if (isLoading) {
             LoadingView()
