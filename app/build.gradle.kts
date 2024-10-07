@@ -4,7 +4,7 @@ plugins {
     id("com.google.gms.google-services")
 }
 
-android {
+android     {
     namespace = "com.tifd.projectcomposed"
     compileSdk = 34
 
@@ -13,13 +13,16 @@ android {
         minSdk = 24
         targetSdk = 34
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.0" 
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
+        buildConfigField("String", "BASE_URL", "\"https://api.github.com/\"")
+        buildConfigField("String", "API_KEY", "\"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\"")
     }
+
 
     buildTypes {
         release {
@@ -39,6 +42,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.2.0"
@@ -76,4 +80,8 @@ dependencies {
     implementation ("com.google.firebase:firebase-auth-ktx")
     implementation ("com.google.firebase:firebase-firestore:24.6.0")
     implementation ("com.google.firebase:firebase-database:20.3.0")
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("io.coil-kt:coil-compose:2.1.0")
+
 }
