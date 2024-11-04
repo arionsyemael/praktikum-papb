@@ -1,46 +1,43 @@
 package com.tifd.projectcomposed
 
-import android.content.Intent
+import android.app.Application
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
-import com.google.firebase.auth.FirebaseAuth
-import com.tifd.projectcomposed.navigation.NavigationItem
-import com.tifd.projectcomposed.navigation.Screen
-import com.tifd.projectcomposed.ui.theme.ProjectComposeDTheme
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.tifd.projectcomposed.local.TugasRepository
+import com.tifd.projectcomposed.navigation.NavigationItem
+import com.tifd.projectcomposed.navigation.Screen
+import com.tifd.projectcomposed.screen.MatkulScreen
 import com.tifd.projectcomposed.screen.ProfileScreen
 import com.tifd.projectcomposed.screen.TugasScreen
-import com.tifd.projectcomposed.screen.MatkulScreen
-
+import com.tifd.projectcomposed.ui.theme.ProjectComposeDTheme
 
 class MainActivity : ComponentActivity() {
 
     private val githubProfileViewModel: GithubProfileViewModel by viewModels()
+
+    // Inisialisasi TugasRepository
+    private lateinit var tugasRepository: TugasRepository
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Inisialisasi tugasRepository dengan context aplikasi
+        tugasRepository = TugasRepository(application)
+
         githubProfileViewModel.fetchGithubProfile("arionsyemael")
         setContent {
             ProjectComposeDTheme {
@@ -48,7 +45,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainActivityScreen(viewModel = githubProfileViewModel)
+                    MainActivityScreen(viewModel = githubProfileViewModel, tugasRepository = tugasRepository)
                 }
             }
         }
@@ -57,16 +54,15 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainActivityScreen(
-    modifier : Modifier = Modifier,
-    navController : NavHostController = rememberNavController(),
-    viewModel: GithubProfileViewModel
-
+    modifier: Modifier = Modifier,
+    navController: NavHostController = rememberNavController(),
+    viewModel: GithubProfileViewModel,
+    tugasRepository: TugasRepository // Tambahkan parameter ini
 ) {
     Scaffold(
-        bottomBar = {BottomBar(navController)},
+        bottomBar = { BottomBar(navController) },
         modifier = modifier
-    ) {
-            innerPadding ->
+    ) { innerPadding ->
         NavHost(
             navController = navController,
             startDestination = Screen.Matkul.route,
@@ -76,7 +72,7 @@ fun MainActivityScreen(
                 MatkulScreen()
             }
             composable(Screen.Tugas.route) {
-                TugasScreen()
+                TugasScreen(tugasRepository = tugasRepository) // Oper parameter ini ke TugasScreen
             }
             composable(Screen.Profile.route) {
                 ProfileScreen(viewModel)
@@ -113,8 +109,7 @@ fun BottomBar(
         navigationItems.map { item ->
             NavigationBarItem(
                 icon = {
-                    Icon(imageVector = item.icon,
-                        contentDescription = item.title)
+                    Icon(imageVector = item.icon, contentDescription = item.title)
                 },
                 label = { Text(text = item.title) },
                 selected = false,
