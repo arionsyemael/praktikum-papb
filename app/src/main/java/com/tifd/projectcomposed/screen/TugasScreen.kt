@@ -28,6 +28,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.tifd.projectcomposed.local.TugasRepository
 import com.tifd.projectcomposed.viewmodel.MainViewModel
 import com.tifd.projectcomposed.viewmodel.MainViewModelFactory
+import com.tifd.projectcomposed.MainActivity
 
 @Composable
 fun TugasScreen(tugasRepository: TugasRepository) {
@@ -96,7 +97,7 @@ fun TugasScreen(tugasRepository: TugasRepository) {
                 Text(text = "You're free for now.", style = MaterialTheme.typography.titleMedium)
             } else {
                 for ((index, tugas) in tugasList.withIndex()) {
-                    if (!tugas.selesai) {
+                    if (!tugas.completed) {
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -111,7 +112,7 @@ fun TugasScreen(tugasRepository: TugasRepository) {
                             ) {
                                 Column {
                                     Text(
-                                        text = "Mata Kuliah: ${tugas.matkul}",
+                                        text = "Mata Kuliah: ${tugas.namaMatkul}",
                                         style = MaterialTheme.typography.bodyMedium
                                     )
                                     Text(
@@ -120,7 +121,7 @@ fun TugasScreen(tugasRepository: TugasRepository) {
                                     )
                                 }
                                 Checkbox(
-                                    checked = tugas.selesai,
+                                    checked = tugas.completed,
                                     onCheckedChange = { isChecked ->
                                         mainViewModel.updateTugas(tugas)
                                     }

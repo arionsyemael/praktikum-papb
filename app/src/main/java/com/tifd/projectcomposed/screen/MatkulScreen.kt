@@ -1,8 +1,8 @@
 package com.tifd.projectcomposed.screen
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -14,95 +14,68 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
-fun MatkulScreen() {
-    val db = Firebase.firestore
-    val dataListState = remember { mutableStateOf(listOf<DataModel>()) }
+fun MatkulScreen(modifier: Modifier = Modifier) {
+    val db = FirebaseFirestore.getInstance()
+    var dataList by remember { mutableStateOf(listOf<JadwalKuliahModel>()) }
 
     LaunchedEffect(Unit) {
         db.collection("jadwal-kuliah")
             .get()
             .addOnSuccessListener { result ->
-                val items = result.documents.mapNotNull { document ->
-                    try {
-                        DataModel(
-                            mata_kuliah = document.getString("mata_kuliah") ?: "-",
-                            hari = Hari.safeValueOf(document.getString("hari")),
-                            jam_mulai = document.getString("jam_mulai") ?: "-",
-                            jam_selesai = document.getString("jam_selesai") ?: "-",
-                            ruang = document.getString("ruang") ?: "-"
-                        )
-                    } catch (e: Exception) {
-                        null // Safely handle any conversion issues
-                    }
+                val items = result.documents.map { document ->
+                    JadwalKuliahModel(
+                        hari = document.getString("hari") ?: "",
+                        jamMulai = document.getString("jam mulai") ?: "",
+                        jamSelesai = document.getString("jam selesai") ?: "",
+                        matkul = document.getString("matkul") ?: "",
+                        ruang = document.getString("ruang") ?: ""
+                    )
                 }
-                dataListState.value = items.sortedWith(
-                    compareBy<DataModel> { it.hari.urutan }
-                        .thenBy { it.jam_mulai }
-                )
-            }
-            .addOnFailureListener {
-                // Handle the failure
+                dataList = items
             }
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 56.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(dataListState.value) { data ->
-                DataCard(data)
-            }
+    LazyColumn(
+        modifier = modifier.fillMaxSize(),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(dataList) { data ->
+            JadwalKuliahCard(data)
         }
     }
 }
 
 @Composable
-fun DataCard(data: DataModel) {
+fun JadwalKuliahCard(data: JadwalKuliahModel) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(4.dp),
-        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface)
+        elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text("Mata Kuliah: ${data.mata_kuliah}", style = MaterialTheme.typography.bodyMedium)
-            Text("Hari: ${data.hari.name}", style = MaterialTheme.typography.bodyMedium)
-            Text("Jam: ${data.jam_mulai} - ${data.jam_selesai}", style = MaterialTheme.typography.bodyMedium)
+            Text("Hari: ${data.hari}", style = MaterialTheme.typography.bodyMedium)
+            Text("Jam Mulai: ${data.jamMulai}", style = MaterialTheme.typography.bodyMedium)
+            Text("Jam Selesai: ${data.jamSelesai}", style = MaterialTheme.typography.bodyMedium)
+            Text("Mata Kuliah: ${data.matkul}", style = MaterialTheme.typography.bodyMedium)
             Text("Ruang: ${data.ruang}", style = MaterialTheme.typography.bodyMedium)
         }
     }
 }
 
-data class DataModel(
-    val mata_kuliah: String,
-    val hari: Hari,
-    val jam_mulai: String,
-    val jam_selesai: String,
+// Data Model class to handle the updated fields
+data class JadwalKuliahModel(
+    val hari: String,
+    val jamMulai: String,
+    val jamSelesai: String,
+    val matkul: String,
     val ruang: String
 )
-
-enum class Hari(val urutan: Int) {
-    SENIN(1),
-    SELASA(2),
-    RABU(3),
-    KAMIS(4),
-    JUMAT(5),
-    SABTU(6),
-    MINGGU(7);
-
-    companion object {
-        fun safeValueOf(value: String?): Hari {
-            return values().find { it.name.equals(value, ignoreCase = true) } ?: SENIN
-        }
-    }
-}

@@ -1,5 +1,6 @@
 package com.tifd.projectcomposed.viewmodel
 
+import androidx.compose.ui.window.application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,39 +9,28 @@ import com.tifd.projectcomposed.local.Tugas
 import com.tifd.projectcomposed.local.TugasRepository
 import kotlinx.coroutines.launch
 
+
 class MainViewModel(private val tugasRepository: TugasRepository) : ViewModel() {
 
-    private val _tugasList = tugasRepository.getALlTugas()
-    val tugasList: LiveData<List<Tugas>> = _tugasList
+    private val tugasRepository: TugasRepository = TugasRepository(application)
+    val allTugas: LiveData<List<Tugas>> = tugasRepository.tugasList
 
-    private val _error = MutableLiveData<String>()
-    val error: LiveData<String> = _error
-
-    private val _isLoading = MutableLiveData<Boolean>()
-    val isLoading: LiveData<Boolean> = _isLoading
-
-    init {
-        fetchAllTugas()
-    }
-
-    private fun fetchAllTugas() {
+    fun addTugas(tugas: Tugas) {
         viewModelScope.launch {
-            tugasRepository.getALlTugas()
+            tugasRepository.insertTugas(tugas)
         }
     }
 
-    fun addTugas(matkul: String, detailTugas: String) {
-        val newTugas = Tugas(matkul = matkul, detailTugas = detailTugas, selesai = false)
+    fun deleteTugas(tugas: Tugas) {
         viewModelScope.launch {
-            tugasRepository.insertTugas(newTugas)
+            tugasRepository.deleteTugas(tugas)
         }
     }
 
-    fun updateTugas(tugas: Tugas) {
+    fun toggleCompletion(tugas: Tugas) {
         viewModelScope.launch {
-            tugasRepository.updateTugas(tugas)
+            val updatedTugas = tugas.copy(completed = !tugas.completed)
+            tugasRepository.updateTugas(updatedTugas)
         }
     }
-
-
 }

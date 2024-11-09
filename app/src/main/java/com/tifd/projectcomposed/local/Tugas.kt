@@ -6,12 +6,19 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 
-@Entity
+@Entity(tableName = "tugas_table")
 @Parcelize
-class Tugas (
+data class Tugas(
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "id") var id: Int = 0,
-    @ColumnInfo(name = "matkul") var matkul: String,
-    @ColumnInfo(name = "detail_tugas") var detailTugas: String,
-    @ColumnInfo(name = "selesai") var selesai: Boolean,
+    @ColumnInfo(name = "id")
+    val id: Int = 0,
+
+    @ColumnInfo(name = "namaMatkul")
+    val namaMatkul: String,
+
+    @ColumnInfo(name = "detailTugas")
+    val detailTugas: String,
+
+    @ColumnInfo(name = "completed")
+    var completed: Boolean = false
 ) : Parcelable
