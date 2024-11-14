@@ -1,5 +1,6 @@
 package com.tifd.projectcomposed
 
+import android.app.Application
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -41,6 +42,7 @@ import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.google.firebase.auth.FirebaseAuth
+import com.tifd.projectcomposed.local.TugasRepository
 
 class MainActivity : ComponentActivity() {
     private lateinit var auth: FirebaseAuth
@@ -210,6 +212,7 @@ fun LoginScreen(onLoginClick: (String, String) -> Unit) {
 @Composable
 fun MainScreen() {
     val navController = rememberNavController()
+    val tugasRepository = TugasRepository(LocalContext.current.applicationContext as Application)
     Scaffold(
         bottomBar = {
             BottomBar(
@@ -230,11 +233,12 @@ fun MainScreen() {
                         icon = Icons.Default.Person,
                         screen = Screen.Profil
                     )
+
                 )
             )
         }
     ) { innerPadding ->
-        NavigationGraph(navController, Modifier.padding(innerPadding))
+        NavigationGraph(navController, Modifier.padding(innerPadding), tugasRepository )
     }
 }
 
@@ -268,13 +272,13 @@ fun BottomBar(navController: NavController, items: List<NavigationItem>) {
 }
 
 @Composable
-fun NavigationGraph(navController: NavHostController, modifier: Modifier = Modifier) {
+fun NavigationGraph(navController: NavHostController, modifier: Modifier = Modifier,tugasRepository: TugasRepository) {
     NavHost(navController = navController, startDestination = Screen.Matkul.route, modifier = modifier) {
         composable(Screen.Matkul.route) {
             MatkulScreen()
         }
         composable(Screen.Tugas.route) {
-            TugasScreen()
+            TugasScreen(tugasRepository)
         }
         composable(Screen.Profil.route) {
             ProfileScreen()

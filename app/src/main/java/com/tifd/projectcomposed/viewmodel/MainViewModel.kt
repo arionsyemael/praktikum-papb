@@ -1,21 +1,18 @@
 package com.tifd.projectcomposed.viewmodel
 
-import androidx.compose.ui.window.application
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tifd.projectcomposed.local.Tugas
 import com.tifd.projectcomposed.local.TugasRepository
 import kotlinx.coroutines.launch
 
-
 class MainViewModel(private val tugasRepository: TugasRepository) : ViewModel() {
 
-    private val tugasRepository: TugasRepository = TugasRepository(application)
     val allTugas: LiveData<List<Tugas>> = tugasRepository.tugasList
 
-    fun addTugas(tugas: Tugas) {
+    fun addTugas(matkul: String, detailTugas: String) {
+        val tugas = Tugas(namaMatkul = matkul, detailTugas = detailTugas, completed = false)
         viewModelScope.launch {
             tugasRepository.insertTugas(tugas)
         }

@@ -28,14 +28,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.tifd.projectcomposed.local.TugasRepository
 import com.tifd.projectcomposed.viewmodel.MainViewModel
 import com.tifd.projectcomposed.viewmodel.MainViewModelFactory
-import com.tifd.projectcomposed.MainActivity
 
 @Composable
 fun TugasScreen(tugasRepository: TugasRepository) {
-    val mainViewModel : MainViewModel = viewModel(factory = MainViewModelFactory(tugasRepository))
+    val mainViewModel: MainViewModel = viewModel(factory = MainViewModelFactory(tugasRepository))
     var matkul by remember { mutableStateOf("") }
     var detailTugas by remember { mutableStateOf("") }
-    val tugasList by mainViewModel.tugasList.observeAsState(emptyList())
+    val tugasList by mainViewModel.allTugas.observeAsState(emptyList()) // Menggunakan allTugas
 
     var snackbarVisible by remember { mutableStateOf(false) }
     var snackbarMessage by remember { mutableStateOf("") }
@@ -45,8 +44,8 @@ fun TugasScreen(tugasRepository: TugasRepository) {
         snackbarVisible = true
     }
 
-    Column(modifier = Modifier.fillMaxWidth()){
-        Column(modifier = Modifier.weight(1f)){
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.weight(1f)) {
             Text(text = "Add new Task", style = MaterialTheme.typography.titleLarge)
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -54,7 +53,7 @@ fun TugasScreen(tugasRepository: TugasRepository) {
             TextField(
                 value = matkul,
                 onValueChange = { matkul = it },
-                label = {Text("Mata Kuliah")},
+                label = { Text("Mata Kuliah") },
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -63,7 +62,7 @@ fun TugasScreen(tugasRepository: TugasRepository) {
             TextField(
                 value = detailTugas,
                 onValueChange = { detailTugas = it },
-                label = {Text("Detail Tugas")},
+                label = { Text("Detail Tugas") },
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -79,7 +78,7 @@ fun TugasScreen(tugasRepository: TugasRepository) {
                     }
                 },
                 modifier = Modifier.fillMaxWidth()
-            ){
+            ) {
                 Text(text = "Tambahkan!")
             }
         }
@@ -88,45 +87,43 @@ fun TugasScreen(tugasRepository: TugasRepository) {
             modifier = Modifier
                 .weight(1f)
                 .padding(top = 16.dp)
-        ){
+        ) {
             Text(text = "Task List", style = MaterialTheme.typography.titleLarge)
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            if (tugasList.isEmpty()){
+            if (tugasList.isEmpty()) {
                 Text(text = "You're free for now.", style = MaterialTheme.typography.titleMedium)
             } else {
-                for ((index, tugas) in tugasList.withIndex()) {
-                    if (!tugas.completed) {
-                        Card(
+                tugasList.forEach { tugas ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp)
+                    ) {
+                        Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(vertical = 4.dp)
+                                .padding(16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween, // Align items
-                                verticalAlignment = Alignment.CenterVertically     // Center vertically
-                            ) {
-                                Column {
-                                    Text(
-                                        text = "Mata Kuliah: ${tugas.namaMatkul}",
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
-                                    Text(
-                                        text = "Detail Tugas: ${tugas.detailTugas}",
-                                        style = MaterialTheme.typography.bodySmall
-                                    )
-                                }
-                                Checkbox(
-                                    checked = tugas.completed,
-                                    onCheckedChange = { isChecked ->
-                                        mainViewModel.updateTugas(tugas)
-                                    }
+                            Column {
+                                Text(
+                                    text = "Mata Kuliah: ${tugas.namaMatkul}",
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                                Text(
+                                    text = "Detail Tugas: ${tugas.detailTugas}",
+                                    style = MaterialTheme.typography.bodySmall
                                 )
                             }
+                            Checkbox(
+                                checked = tugas.completed,
+                                onCheckedChange = {
+                                    mainViewModel.toggleCompletion(tugas)
+                                }
+                            )
                         }
                     }
                 }
